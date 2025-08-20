@@ -2,7 +2,7 @@
   "name": "shahrooz/shahneshan-php",
   "description": "Markdown → HTML with Persian extensions (ShahNeshan, PHP).",
   "type": "library",
-  "license": "GPL-3.0-only",
+  "license": "Apache-2.0",
   "require": {
     "php": ">=8.0",
     "ext-mbstring": "*"
