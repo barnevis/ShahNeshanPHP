@@ -68,3 +68,32 @@ ol ol > li:before {
 .حکم{
   color: blue;
 }
+
+.alert{
+  margin: 10px 0;
+  padding: 10px;
+  border-right: 4px solid;
+  background-color: #ebebeb;
+  direction: rtl;
+}
+
+.alert h1, .alert p{
+  font-size: 16px;
+  margin: 0;
+}
+.alert h1{ margin-bottom: 6px; }
+
+.note{ border-color:#0044ff; }
+.note h1{ color:#0044ff; }
+
+.tip{ border-color:#1b7200; }
+.tip h1{ color:#1b7200; }
+
+.important{ border-color:#9400b9; }
+.important h1{ color:#9400b9; }
+
+.warning{ border-color:#866700; }
+.warning h1{ color:#866700; }
+
+.caution{ border-color:#c20000; }
+.caution h1{ color:#c20000; }
