@@ -1,0 +1,22 @@
+
+body {
+  font-family: Arial, sans-serif;
+  line-height: 1.6;
+  padding: 20px;
+}
+
+#content {
+  /* direction: rtl; */
+
+  max-width: 800px;
+  margin: auto;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+}
+
+ol{
+  /* list-style-type: persian; */
+}
+  

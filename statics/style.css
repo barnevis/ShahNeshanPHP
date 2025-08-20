@@ -1,0 +1,70 @@
+
+  
+
+.task{
+  display: flex;
+  gap: 0.5em;
+}
+
+.task p {
+  margin: 0;
+}
+
+  
+/* table */
+table {
+  border-collapse: collapse;
+}
+table,
+th,
+td {
+    border: 1.5px solid black;
+    padding: 0.2em 1em;
+}
+
+ol {
+  /* counter-reset: item; */
+}
+
+ol > li {
+  /* counter-increment: item; */
+}
+
+ol ol > li {
+  /* display: ruby; */
+}
+
+ol ol > li:before {
+  /* content: counters(item, ".") ". ";
+  margin-left: -20px; */
+}
+
+
+.persian{
+  direction: rtl;
+}
+
+.poet{
+  margin: 1em 0;
+  font-style: italic;
+  display: grid;
+  column-gap: 2em;
+  grid-template-columns: calc(50% - 1em) calc(50% - 1em);
+
+}
+
+.poet > div:nth-child(even) {
+  text-align: right; /* Right-align content for odd-numbered columns */
+}
+
+.poet > div:nth-child(odd) {
+  text-align: left; /* Left-align content for even-numbered columns */
+}
+
+.شعر{
+  /* color: red; */
+}
+
+.حکم{
+  color: blue;
+}
