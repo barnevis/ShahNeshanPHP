@@ -186,7 +186,7 @@ $html  = $renderer->nodesToHtml($nodes);
 
 ## مجوز
 
-این پروژه تحت مجوز GNU GPLv3 منتشر شده است. متن کامل مجوز در فایل [LICENSE](LICENSE) موجود است.
+این پروژه تحت مجوز Apache-2.0 منتشر شده است. متن کامل مجوز در فایل [LICENSE](LICENSE) موجود است.
 
 </br>
 </br>
@@ -353,5 +353,5 @@ Alert blocks use classes: `.alert.note`, `.alert.tip`, `.alert.important`, `.ale
 
 ## License
 
-Released under the [GNU GPLv3](LICENSE).
+Released under the [Apache-2.0](LICENSE).
 
