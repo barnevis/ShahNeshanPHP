@@ -1,0 +1,12 @@
+{
+  "name": "shahrooz/shahneshan-php",
+  "description": "Markdown → HTML with Persian extensions (ShahNeshan, PHP).",
+  "type": "library",
+  "license": "GPL-3.0-only",
+  "require": {
+    "php": ">=8.0",
+    "ext-mbstring": "*"
+  },
+  "autoload": { "psr-4": { "ShahNeshan\\": "src/" } },
+  "autoload-dev": { "psr-4": { "ShahNeshan\\Tests\\": "tests/" } }
+}

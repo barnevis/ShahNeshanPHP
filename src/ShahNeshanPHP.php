@@ -1,10 +1,11 @@
 <?php
+// src/ShahNeshanPHP.php
+declare(strict_types=1);
 
-require_once 'MarkdownParser.php';
-require_once 'HtmlRenderer.php';
-require_once 'PluginInterface.php';
-require_once 'PluginManager.php';
-require_once 'plugins/EmojiPlugin.php';
+namespace ShahNeshan;
+
+use ShahNeshan\Plugins\EmojiPlugin;
+
 
 class ShahNeshanPHP {
     private $parser;

@@ -1,5 +1,11 @@
 <?php
+// src/Plugins/EmojiPlugin.php
 
+declare(strict_types=1);
+
+namespace ShahNeshan\Plugins;
+
+use ShahNeshan\PluginInterface;
 
 class EmojiPlugin implements PluginInterface {
     private $emojiMap = [

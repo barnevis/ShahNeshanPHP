@@ -1,198 +1,357 @@
-# Project Title
 
-Welcome to the **Markdown Parser** project! \ This parser converts Markdown files into HTML. This document is designed to test various Markdown features supported by the parser.
+<a id="نسخه-فارسی"></a>
+# شه‌نشان PHP (ShahNeshan PHP)
+
+تبدیل Markdown به HTML در سمت سرور (PHP) با پشتیبانی از ویژگی‌های فارسی، جدول‌ها، فهرست کارها، پانوشت‌ها، افزونه‌ها و استایل‌های سفارشی.
+
+[Read the English version](#ShahNeshanPHP)
 
 ---
 
-## Table of Contents
+## نصب
 
-1. [Features](#features)
-2. [Installation](#installation)
-3. [Usage](#usage)
-4. [Examples](#examples)
-5. [License](#license)
+### با Composer (پیشنهادی)
+
+> نیازمندی‌ها: `PHP >= 8.0` و افزونه `mbstring`
+
+اگر بسته روی Packagist نیست، به صورت VCS یا path اضافه کنید:
+
+**به‌صورت مخزن Git:**
+```json
+// composer.json پروژه مصرف‌کننده
+{
+  "repositories": [
+    { "type": "vcs", "url": "https://github.com/YourUser/ShahNeshanPHP" }
+  ],
+  "require": {
+    "shahrooz/shahneshan-php": "dev-main"
+  }
+}
+```
+
+سپس:
+
+```bash
+composer update
+```
+
+**به‌صورت مسیر محلی:**
+
+```json
+{
+  "repositories": [
+    { "type": "path", "url": "../ShahNeshanPHP", "options": { "symlink": true } }
+  ],
+  "require": {
+    "shahrooz/shahneshan-php": "*"
+  }
+}
+```
+
+### نصب دستی (بدون Composer)
+
+پوشه‌ی این کتابخانه را در پروژه کپی و فایل‌های اصلی را `require` کنید.
+
+---
+
+## استفادهٔ سریع
+
+```php
+<?php
+require __DIR__.'/vendor/autoload.php';
+
+require_once __DIR__.'/ShahNeshanPHP.php';   // اگر Composer ندارید، فایل‌ها را به‌صورت دستی include کنید
+
+$config = [
+  'customStyles' => 'h1{color:blue} mark{background:yellow;}'
+];
+
+$engine = new ShahNeshanPHP($config);
+$html   = $engine->renderFile(__DIR__.'/README.md');   // یا $engine->renderMarkdown("# سلام دنیا");
+
+echo "<!doctype html><meta charset='utf-8'>
+      <link rel='stylesheet' href='statics/style.css'>
+      {$html}";
+```
+
+> فایل‌های CSS نمونه در `statics/style.css` قرار دارند. می‌توانید استایل‌های خودتان را جایگزین کنید.
+
+---
+
+## ویژگی‌ها
+
+* تیترها، نقل‌قول‌ها، لیست‌های مرتب/نامرتب و چندسطحی
+* کد بلاک سه‌تایی \`\`\` با کلاس زبان
+* لینک/عکس و لینک‌سازی خودکار URLها (خارج از backtick)
+* متن تأکیدی: **bold**، *italic*، `inline code`، ~~strikethrough~~، ==highlight==، H~~2~~O، X^2^
+* چک‌لیست‌ها: `- [ ]` و `- [x]`
+* پانوشت‌ها: ارجاع `[^1]` و تعریف `[^1]: ...`
+* جدول‌ها با ردیف تنظیم چینش ستون‌ها: `| :--- | ---: | :---: |`
+* پشتیبانی از جهت راست‌به‌چپ برای فهرست‌ها و موارد فارسی
+* بلوک‌های فارسی:
+
+  * `...شعر` (poet) با جداساز `--`
+  * `...توجه`، `...نکته`، `...مهم`، `...هشدار`، `...احتیاط` (Alert)
+
+---
+
+## پیکربندی
+
+هنگام ساخت شیء:
+
+```php
+$engine = new ShahNeshanPHP([
+  'customStyles' => '
+    h1 { color: blue; }
+    mark { background-color: yellow; }
+  '
+]);
+```
+
+---
+
+## سیستم افزونه‌ها
+
+هر افزونه باید رابط زیر را پیاده‌سازی کند:
+
+```php
+interface PluginInterface {
+    public function beforeParse($markdown); // string -> string
+    public function transformNode($node);   // Node   -> Node
+    public function afterRender($html);     // string -> string
+}
+```
+
+### مثال افزونه (تعویض ایموجی)
+
+```php
+class MyEmoji implements PluginInterface {
+  public function beforeParse($markdown) {
+    return str_replace(':khande:', '😊', $markdown);
+  }
+  public function transformNode($node) { return $node; }
+  public function afterRender($html) { return $html; }
+}
+```
+
+### نحوهٔ ثبت افزونه
+
+دو روش:
+
+1. ساده (ویرایش `ShahNeshanPHP.php` و افزودن `addPlugin(new MyEmoji())` بعد از EmojiPlugin پیش‌فرض)، یا
+2. ساخت دستی اجزا:
+
+```php
+$pm = new PluginManager();
+$pm->addPlugin(new EmojiPlugin());
+$pm->addPlugin(new MyEmoji());
+
+$parser   = new MarkdownParser(['customStyles' => '...'], $pm);
+$renderer = new HtmlRenderer($pm);
+
+$nodes = $parser->parseMarkdown($markdown);
+$html  = $renderer->nodesToHtml($nodes);
+```
+
+---
+
+## مثال‌های نشانه‌گذاری فارسی
+
+### شعر
+
+```
+...شعر
+خرد رهنمای و خرد دلگشای -- خرد دست گیرد به هر دو سرای
+ازو شادمانی وزویت غمیست -- وزویت فزونی وزویت کمیست
+...
+```
+
+### بلوک‌های هشدار
+
+```
+...توجه
+نکات مهمی که کاربر باید بداند.
+...
+```
+
+### جدول با چینش
+
+```
+| ستون اول | ستون دوم |
+| :------: | -------: |
+| وسط      | راست     |
+```
+
+---
+
+## مجوز
+
+این پروژه تحت مجوز GNU GPLv3 منتشر شده است. متن کامل مجوز در فایل [LICENSE](LICENSE) موجود است.
+
+</br>
+</br>
+</br>
+
+<a id="ShahNeshanPHP"></a>
+
+# ShahNeshan PHP
+
+Server-side Markdown → HTML in PHP with Persian extensions, tables, task lists, footnotes, plugins, and custom styles.
+
+[مطالعه نسخه فارسی](#نسخه-فارسی)
+
+---
+
+## Install
+
+### Via Composer (recommended)
+
+> Requirements: `PHP >= 8.0`, `ext-mbstring`
+
+If not on Packagist yet, add as VCS or path repository.
+
+**VCS (Git):**
+
+```json
+{
+  "repositories": [
+    { "type": "vcs", "url": "https://github.com/YourUser/ShahNeshanPHP" }
+  ],
+  "require": {
+    "shahrooz/shahneshan-php": "dev-main"
+  }
+}
+```
+
+Then:
+
+```bash
+composer update
+```
+
+**Local path:**
+
+```json
+{
+  "repositories": [
+    { "type": "path", "url": "../ShahNeshanPHP", "options": { "symlink": true } }
+  ],
+  "require": {
+    "shahrooz/shahneshan-php": "*"
+  }
+}
+```
+
+### Manual (no Composer)
+
+Copy this library into your project and `require` the files.
+
+---
+
+## Quick Start
+
+```php
+<?php
+require __DIR__.'/vendor/autoload.php';
+// or manual requires if not using Composer
+
+require_once __DIR__.'/ShahNeshanPHP.php';
+
+$engine = new ShahNeshanPHP([
+  'customStyles' => 'h1{color:blue} mark{background:yellow;}'
+]);
+
+$html = $engine->renderFile(__DIR__.'/README.md'); // or ->renderMarkdown("# Hello")
+
+echo "<!doctype html><meta charset='utf-8'>
+      <link rel='stylesheet' href='statics/style.css'>
+      {$html}";
+```
 
 ---
 
 ## Features
 
-- **Headers** from `#` to `######`
-- *Italic*, **bold**, and `inline code`
-- [Links](https://www.example.com) and images
-- Lists:
-  - Unordered lists
-  - Ordered lists
-  - Nested lists
-- Blockquotes
-- Code blocks
-- Horizontal rules
+* ATX headers, blockquotes, ordered/unordered (nested) lists
+* Fenced code blocks \`\`\` with language class
+* Links/images + auto-linking bare URLs (outside backticks)
+* Emphasis: **bold**, *italic*, `inline`, ~~strike~~, ==highlight==, H~~2~~O, X^2^
+* Task lists: `- [ ]` / `- [x]`
+* Footnotes: refs `[^1]` & defs `[^1]: ...`
+* Tables with alignment row: `| :--- | ---: | :---: |`
+* RTL detection for Persian/Arabic lists
+* Persian blocks:
 
-Here is a link to [OpenAI](https://www.openai.com).
-Check this site too: http://www.example.com
-But do not link this: `http://www.example.com`
-
-Gone camping! :tent: Be back soon.
-
-That is so funny! :joy:
+  * `...شعر` (poetry) with `--` separator
+  * Alert blocks: `...توجه`, `...نکته`, `...مهم`, `...هشدار`, `...احتیاط`
 
 ---
 
-## Installation
+## Configuration
 
-To install this project, clone the repository and run the setup script:
-
-```bash
-git clone https://github.com/example/markdown-parser.git
-cd markdown-parser
-npm install
+```php
+$engine = new ShahNeshanPHP([
+  'customStyles' => '
+    h1 { color: blue; }
+    mark { background-color: yellow; }
+  '
+]);
 ```
 
-## Usage
-
-Simply run the following command to parse your Markdown file:
-
-```bash
-node parse.js README.md
-```
-
-This will convert the Markdown into HTML and output it in the `dist` folder.
-
 ---
 
-## Examples
+## Plugin System
 
-### Headers
+A plugin implements:
 
-# Header 1
-## Header 2
-### Header 3
-#### Header 4
-##### Header 5
-###### Header 6
-
-### Emphasis
-
-This text is **bold** and this text is *italic*. You can also combine them for ***bold and italic***.
-
-Inline code looks like this: `console.log("Hello, world!");`
-
-This is some text with footnotes[^1][^2].
-
-[^1]: This is footnote 1.
-[^2]: This is footnote 2.
-
-
-
-### Blockquotes
-
-> This is a blockquote.
-> 
-> - It can contain lists,
-> - **Bold text**, and
-> - *Italic text*
-
-> Nested blockquote:
-> > Another level of quote.
-
-### Lists
-
-#### Unordered List
-
-- Item 1
-  - Subitem 1.1
-  - Subitem 1.2
-- Item 2
-
-#### Ordered List
-
-1. First item
-2. Second item
-   1. Subitem 2.1
-   2. Subitem 2.2
-3. Third item
-
-### Images
-
-![OpenAI Logo](https://openai.com/favicon.ico)
-
-### Links
-
-Visit the [OpenAI website](https://www.openai.com) for more information.
-
----
-
-### Horizontal Rule
-
----
-
-### Code Blocks
-
-```javascript
-function greet() {
-    console.log("Hello, world!");
+```php
+interface PluginInterface {
+    public function beforeParse($markdown); // string -> string
+    public function transformNode($node);   // Node   -> Node
+    public function afterRender($html);     // string -> string
 }
-greet();
 ```
 
-```python
-def greet():
-    print("Hello, world!")
+### Example plugin
 
-greet()
+```php
+class MyEmoji implements PluginInterface {
+  public function beforeParse($markdown){ return str_replace(':khande:', '😊', $markdown); }
+  public function transformNode($node){ return $node; }
+  public function afterRender($html){ return $html; }
+}
 ```
+
+### Registering plugins
+
+Either edit `ShahNeshanPHP` to add your plugin, or wire components manually:
+
+```php
+$pm = new PluginManager();
+$pm->addPlugin(new EmojiPlugin());
+$pm->addPlugin(new MyEmoji());
+
+$parser   = new MarkdownParser(['customStyles' => '...'], $pm);
+$renderer = new HtmlRenderer($pm);
+
+$html = $renderer->nodesToHtml($parser->parseMarkdown($markdown));
+```
+
+---
+
+## Styling
+
+Include the sample CSS files or your own:
+
+```html
+<link rel="stylesheet" href="/path/to/statics/style.css">
+```
+
+Alert blocks use classes: `.alert.note`, `.alert.tip`, `.alert.important`, `.alert.warning`, `.alert.caution` and poetry uses `.persian.poet` + `.stanza`.
+
+---
 
 ## License
 
-```
-This project is licensed under the MIT License. See the LICENSE file for more information.
-```
+Released under the [GNU GPLv3](LICENSE).
 
----
-
-### Explanation of the Content
-
-This Markdown file tests the following features:
-
-1. **Headers**: Six levels of headers.
-2. **Emphasis**: Bold, italic, and combined bold+italic text.
-3. **Inline Code**: Simple inline code in text.
-4. **Blockquotes**: Single and nested blockquotes with lists and formatted text inside.
-5. **Lists**: Unordered lists with subitems and ordered lists with nested subitems.
-6. **Images**: A sample image with alt text.
-7. **Links**: Hyperlinks to external URLs.
-8. **Horizontal Rules**: Divider lines with `---`.
-9. **Code Blocks**: Multiple fenced code blocks with language annotations (JavaScript and Python).
-10. **Persian Rules**: Divider lines with ...
-
-
-
-| Column 1      | Column 2      |
-| ------------- | ------------- |
-| Cell 1, Row 1 | Cell 2, Row 1 |
-| Cell 1, Row 2 | Cell 1, Row 2 |
-
-
-This is ==highlighted text== in a sentence.
-~~The world is flat.~~ We now know that the world is round.  H~2~O  X^2^
-
-
-
-...شعر
-
-روزها اندیشه‌ام این است و همه شب گفته‌ام -- که چرا غافل از احوال دل خویشتنم
-    ز کجا آمده‌ام آمدنم بهر چه بود -- ز کجا میروم آخر ننمایی وطنم
-
-مانده‌ام سخت شگفت کز چه سبب ساخت مرا
-یا چه بود است مراد وی از این ساختنم
-...
-
-
-### شمارش فارسی
-
-۱. سرزمین
-۲. کشور
-۳. سرباز
-
-
-- [ ] کاری که باید بکنم
-- [x] کاری که انجام دادم

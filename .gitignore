@@ -1,0 +1,31 @@
+# Composer
+/vendor/
+/composer.phar
+/composer.lock   # For libraries, usually NOT committed. Remove from ignore if you want to commit it.
+
+# Tests & coverage
+/.phpunit.result.cache
+/phpunit.xml
+/phpunit.xml.dist
+/coverage/
+
+# Builds / caches
+/build/
+/dist/
+/cache/
+/tmp/
+
+# Logs
+*.log
+
+# IDE/editor
+/.idea/
+/.vscode/
+/*.iml
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# If any JS examples/scripts appear later
+node_modules/

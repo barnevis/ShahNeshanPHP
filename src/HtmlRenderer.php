@@ -1,10 +1,18 @@
 <?php
+declare(strict_types=1);
+
+namespace ShahNeshan;
 
 class HtmlRenderer {
     private $pluginManager;
 
     public function __construct(PluginManager $pluginManager) {
         $this->pluginManager = $pluginManager;
+    }
+
+    /** Always escape as string */
+    private function esc($v): string {
+        return htmlspecialchars((string)$v, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
     }
 
     // Render an array that may contain Node objects and/or strings
@@ -58,13 +66,13 @@ class HtmlRenderer {
             }
 
             case 'codeBlock': {
-                $code = implode("\n", $node->content); // content lines are strings
-                $langClass = htmlspecialchars($node->attributes['lang'] ?? '', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
-                return "<pre><code class=\"{$langClass}\">".htmlspecialchars($code, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')."</code></pre>";
+                $code = implode("\n", $node->content);
+                $langClass = $this->esc($node->attributes['lang'] ?? '');
+                return "<pre><code class=\"{$langClass}\">".$this->esc($code)."</code></pre>";
             }
 
             case 'persianBlock': {
-                $codeClass = htmlspecialchars($node->attributes['code'] ?? '', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+                $codeClass = $this->esc($node->attributes['code'] ?? '');
                 return "<div class=\"persian {$codeClass}\">".$this->renderChildren($node->content)."</div>";
             }
 
@@ -102,19 +110,19 @@ class HtmlRenderer {
 
             case 'tableHeaderCell': {
                 $align = $node->attributes['align'] ?? null;
-                $attr  = $align ? ' align="'.htmlspecialchars($align, ENT_QUOTES, 'UTF-8').'"' : '';
+                $attr  = $align ? ' align="'.$this->esc($align).'"' : '';
                 return "<th{$attr}>".$this->renderChildren($node->content)."</th>";
             }
 
             case 'tableCell': {
                 $align = $node->attributes['align'] ?? null;
-                $attr  = $align ? ' align="'.htmlspecialchars($align, ENT_QUOTES, 'UTF-8').'"' : '';
+                $attr  = $align ? ' align="'.$this->esc($align).'"' : '';
                 return "<td{$attr}>".$this->renderChildren($node->content)."</td>";
             }
 
             case 'image': {
-                $src = htmlspecialchars($node->attributes['src'] ?? '', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
-                $alt = htmlspecialchars($node->attributes['alt'] ?? '', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+                $src = $this->esc($node->attributes['src'] ?? '');
+                $alt = $this->esc($node->attributes['alt'] ?? '');
                 return "<img src=\"{$src}\" alt=\"{$alt}\">";
             }
 
@@ -126,8 +134,9 @@ class HtmlRenderer {
                 return "<section class=\"footnotes\" dir=\"auto\"><h2>Footnotes</h2><ol>".$this->renderChildren($node->content)."</ol></section>";
 
             case 'footnote': {
-                $ref = htmlspecialchars($node->attributes['ref'] ?? '', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
-                return "<li id=\"footnote-{$ref}\">".$this->renderChildren($node->content)." <a href=\"#footnote-ref-{$ref}\">↩</a></li>";
+                $ref    = (string)($node->attributes['ref'] ?? '');
+                $refEsc = $this->esc($ref);
+                return "<li id=\"footnote-{$refEsc}\">".$this->renderChildren($node->content)." <a href=\"#footnote-ref-{$refEsc}\">↩</a></li>";
             }
 
             default:
